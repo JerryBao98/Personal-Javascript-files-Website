@@ -1,0 +1,119 @@
+boardsize 7
+clear_board
+play B E6
+play W C1
+play B E5
+play W C2
+play B E4
+play W C3
+play B E1
+play W C4
+play B E2
+play W C5
+
+boardsize 7
+clear_board
+play B E6
+play W C1
+play B E5
+play W C5
+play B E4
+play W C4
+play B E1
+play W C3
+play B E2
+play W C2
+
+
+//////////////////
+5
+1
+2
+3
+4
+//////////////////
+boardsize 7
+clear_board
+play B E6
+play W A2
+play B E5
+play W A3
+play B E4
+play W A4
+play B E1
+play W A5
+play B E2
+play W A1
+
+//////////////////
+4
+1
+2
+3
+5
+//////////////////
+boardsize 7
+clear_board
+play B E6
+play W A2
+play B E5
+play W A3
+play B E4
+play W A4
+play B E1
+play W A1
+play B E2
+play W A5
+
+//////////////////
+5
+2
+1
+3
+4
+//////////////////
+boardsize 7
+clear_board
+play B E6
+play W A3
+play B E5
+play W A2
+play B E4
+play W A4
+play B E1
+play W A5
+play B E2
+play W A1
+
+
+///////////////
+test back slash direction
+///////////////
+boardsize 7
+clear_board
+play B A1
+play W D2
+play B B2
+play W E1
+play B C3
+play W C4
+play B D4
+play W C3
+play B E5
+play W C1
+
+///////////////
+test forward slash direction
+///////////////
+boardsize 7
+clear_board
+play B E1
+play W D7
+play B D2
+play W E2
+play B C3
+play W C4
+play B B4
+play W C7
+play B A5
+play W C1
