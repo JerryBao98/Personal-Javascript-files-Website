@@ -209,14 +209,27 @@ class GtpConnection():
 
     def gogui_rules_legal_moves_cmd(self, args):
         """ Implement this function for Assignment 1 """
-
+        # TODO SHOULD BE DONE
         # -------------------------
         # you need to deal with some cases,
         # case 1: when the board is full, no legal moves should return
         # case 2: when one side is win, no legal moves should return
         # case 3: return all possible legal moves, if either cases NOT happened
-        print(self.board.get_empty_points)
-        self.respond('b1')
+
+        # case 2
+        if self.colorMax['w'] >= 5 or self.colorMax['b'] >= 5:
+            self.respond()
+            return
+
+        # refer to the Go program
+        moves = GoBoardUtil.generate_legal_moves(self.board, 2)
+        gtp_moves = []
+        for move in moves:
+            coords = point_to_coord(move, self.board.size)
+            gtp_moves.append(format_point(coords))
+        sorted_moves = ' '.join(sorted(gtp_moves))
+        self.respond(sorted_moves)
+        print(sorted_moves)
         return
 
     def gogui_rules_side_to_move_cmd(self, args):
@@ -249,13 +262,12 @@ class GtpConnection():
         """ Implement this function for Assignment 1 """
         '''return black or white wins or no winners'''
         result = "unknown"
-        #print(self.board.get_empty_points(),len(self.board.get_empty_points()))
         if len(self.board.get_empty_points()) == 0:
             result = "draw"
             '''evaluation goes after draw! '''
-        if self.colorMax['w'] == 5:
+        if self.colorMax['w'] >= 5:
             self.respond("white win")
-        if self.colorMax['b'] == 5:
+        if self.colorMax['b'] >= 5:
             self.respond("black win")
         else:
             self.respond(result)
@@ -292,7 +304,7 @@ class GtpConnection():
                 return  #do not exist coord!!!
 
             # one more evaluation, if one side wins, then play should not continue!!!
-            if self.colorMax['w'] == 5 or self.colorMax['b'] == 5:
+            if self.colorMax['w'] >= 5 or self.colorMax['b'] >= 5:
                 print("One side is win game over!")
                 return
             # Once executed uptill here, it means , all above conditions passed,
@@ -312,12 +324,17 @@ class GtpConnection():
             self.respond('Error: {}'.format(str(e)))
 
     def genmove_cmd(self, args):
-        """ Modify this function for Assignment 1 """
+        """ TODO """
         """ generate a move for color args[0] in {'b','w'} """
 
         # ------------------------
         # this function needs some simple modification, such that
         # if one side is win, it will not generate any position to move, but return '[resign]'
+
+        if self.colorMax['w'] >= 5 or self.colorMax['b'] >= 5:
+            self.respond("[resign]")
+            return
+
         board_color = args[0].lower()
         color = color_to_int(board_color)
         move = self.go_engine.get_move(self.board, color)
@@ -328,6 +345,7 @@ class GtpConnection():
             self.respond(move_as_string)
         else:
             self.respond("Illegal move: {}".format(move_as_string))
+
     def insertKeyIntoDict(self,color,coord,move):
         dictPointer = {}
         if color.lower() == "w":
