@@ -215,21 +215,18 @@ class GtpConnection():
         # case 1: when the board is full, no legal moves should return
         # case 2: when one side is win, no legal moves should return
         # case 3: return all possible legal moves, if either cases NOT happened
-
-        # case 2
+        # refer to the Go program
         if self.colorMax['w'] >= 5 or self.colorMax['b'] >= 5:
             self.respond()
             return
-
-        # refer to the Go program
         moves = GoBoardUtil.generate_legal_moves(self.board, 2)
         gtp_moves = []
         for move in moves:
             coords = point_to_coord(move, self.board.size)
             gtp_moves.append(format_point(coords))
+            #print(format_point(coords))
         sorted_moves = ' '.join(sorted(gtp_moves))
-        self.respond(sorted_moves)
-        print(sorted_moves)
+        self.respond(sorted_moves.upper())
         return
 
     def gogui_rules_side_to_move_cmd(self, args):
@@ -305,7 +302,7 @@ class GtpConnection():
 
             # one more evaluation, if one side wins, then play should not continue!!!
             if self.colorMax['w'] >= 5 or self.colorMax['b'] >= 5:
-                print("One side is win game over!")
+                self.respond("One side is win game over!")
                 return
             # Once executed uptill here, it means , all above conditions passed,
             # and we should check if that space is empty or not
@@ -326,15 +323,12 @@ class GtpConnection():
     def genmove_cmd(self, args):
         """ TODO """
         """ generate a move for color args[0] in {'b','w'} """
-
         # ------------------------
         # this function needs some simple modification, such that
         # if one side is win, it will not generate any position to move, but return '[resign]'
-
         if self.colorMax['w'] >= 5 or self.colorMax['b'] >= 5:
             self.respond("[resign]")
             return
-
         board_color = args[0].lower()
         color = color_to_int(board_color)
         move = self.go_engine.get_move(self.board, color)

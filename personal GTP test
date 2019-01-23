@@ -117,3 +117,49 @@ play B B4
 play W C7
 play B A5
 play W C1
+
+////////////////
+genmove test
+///////////////
+boardsize 7
+clear_board
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
