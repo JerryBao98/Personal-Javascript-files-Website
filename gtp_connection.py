@@ -218,16 +218,15 @@ class GtpConnection():
         # refer to the Go program
         if self.colorMax['w'] >= 5 or self.colorMax['b'] >= 5:
             self.respond()
-            return
-        moves = GoBoardUtil.generate_legal_moves(self.board, 2)
-        gtp_moves = []
-        for move in moves:
-            coords = point_to_coord(move, self.board.size)
-            gtp_moves.append(format_point(coords))
-            #print(format_point(coords))
-        sorted_moves = ' '.join(sorted(gtp_moves))
-        self.respond(sorted_moves.upper())
-        return
+        else:
+            moves = self.board.get_empty_points()
+            gtp_moves = []
+            for move in moves:
+                coords = point_to_coord(move, self.board.size)
+                gtp_moves.append(format_point(coords))
+                # print(format_point(coords))
+            sorted_moves = ' '.join(sorted(gtp_moves))
+            self.respond(sorted_moves.upper())
 
     def gogui_rules_side_to_move_cmd(self, args):
         """ We already implemented this function for Assignment 1 """
@@ -260,14 +259,15 @@ class GtpConnection():
         '''return black or white wins or no winners'''
         result = "unknown"
         if len(self.board.get_empty_points()) == 0:
-            result = "draw"
+            self.respond("draw")
             '''evaluation goes after draw! '''
-        if self.colorMax['w'] >= 5:
-            self.respond("white win")
-        if self.colorMax['b'] >= 5:
-            self.respond("black win")
         else:
-            self.respond(result)
+            if self.colorMax['w'] >= 5:
+                self.respond("white win")
+            elif self.colorMax['b'] >= 5:
+                self.respond("black win")
+            else:
+                self.respond(result)
 
     # def simple_play_move(self, point, color):
     #     assert is_black_white(color)
@@ -327,26 +327,26 @@ class GtpConnection():
         # this function needs some simple modification, such that
         # if one side is win, it will not generate any position to move, but return '[resign]'
         if self.colorMax['w'] >= 5 or self.colorMax['b'] >= 5:
-            self.respond("[resign]")
-            return
-        board_color = args[0].lower()
-        color = color_to_int(board_color)
-        move = self.go_engine.get_move(self.board, color)
-        move_coord = point_to_coord(move, self.board.size)
-        move_as_string = format_point(move_coord)
-        if self.board.is_legal(move, color):
-            self.board.play_move(move, color)
-            self.respond(move_as_string)
+            self.respond("resign")
         else:
-            self.respond("Illegal move: {}".format(move_as_string))
+            board_color = args[0].lower()
+            color = color_to_int(board_color)
+            move = self.go_engine.get_move(self.board, color)
+            move_coord = point_to_coord(move, self.board.size)
+            move_as_string = format_point(move_coord)
+            if self.board.is_legal(move, color):
+                self.board.play_move(move, color)
+                self.respond(move_as_string)
+            else:
+                self.respond("Illegal move: {}".format(move_as_string))
 
     def insertKeyIntoDict(self,color,coord,move):
         dictPointer = {}
         if color.lower() == "w":
-            print(color,coord, move)
+
             dictPointer = self.dictStoreWhiteMove
         elif color.lower() =="b":
-            print(color, coord, move)
+
             dictPointer = self.dictStoreBlackMove
         dictPointer.setdefault(coord,{'upDown':1,'leftRight':1,'backslash':1,"forwardslash":1})
         for key,value in dictPointer.get(coord).items():
@@ -355,7 +355,7 @@ class GtpConnection():
                 downNighbour = (coord[0]+1,coord[1])
                 #print(upNighbour,downNighbour)
                 if upNighbour in dictPointer.keys():
-                    print("upNighbour exist")
+
                     dictPointer.get(coord)['upDown'] += dictPointer.get(upNighbour)['upDown']   #update the current step
                     #dictPointer.get(upNighbour)['upDown'] = dictPointer.get(coord)['upDown']   #update last step
                     # use while loop to update all past steps
@@ -365,7 +365,7 @@ class GtpConnection():
                         upNighbour = (coord[0]-1-counter,coord[1])
                         counter +=1
                 if downNighbour in dictPointer.keys():
-                    print("downNighbour exist")
+
                     dictPointer.get(coord)['upDown'] += dictPointer.get(downNighbour)['upDown']
                     #dictPointer.get(downNighbour)['upDown'] = dictPointer.get(coord)['upDown']
                     counter = 1
@@ -391,7 +391,7 @@ class GtpConnection():
                         leftNighbour = (coord[0], coord[1] - 1 - counter)
                         counter += 1
                 if rightNighbour in dictPointer.keys():
-                    print("downNighbour exist")
+
                     dictPointer.get(coord)['leftRight'] += dictPointer.get(rightNighbour)['leftRight']
                     #dictPointer.get(downNighbour)['upDown'] = dictPointer.get(coord)['upDown']
                     counter = 1
@@ -410,7 +410,7 @@ class GtpConnection():
                 leftDownNighbour = (coord[0]-1, coord[1] +1)
                 rightUpNighbour = (coord[0]+1, coord[1]-1)
                 if leftDownNighbour in dictPointer.keys():
-                    print("leftDownNighbour exist")
+
                     dictPointer.get(coord)['forwardslash'] += dictPointer.get(leftDownNighbour)['forwardslash']   #update the current step
                     #dictPointer.get(upNighbour)['upDown'] = dictPointer.get(coord)['upDown']   #update last step
                     # use while loop to update all past steps
@@ -420,7 +420,7 @@ class GtpConnection():
                         leftDownNighbour = (coord[0]-1-counter,coord[1] + 1 + counter)
                         counter +=1
                 if rightUpNighbour in dictPointer.keys():
-                    print("rightUpNighbour exist")
+
                     dictPointer.get(coord)['forwardslash'] += dictPointer.get(rightUpNighbour)['forwardslash']
                     #dictPointer.get(downNighbour)['upDown'] = dictPointer.get(coord)['upDown']
                     counter = 1
@@ -439,7 +439,7 @@ class GtpConnection():
                 leftUpNighbour = (coord[0] - 1, coord[1] - 1)
                 rightDownNighbour = (coord[0] + 1, coord[1] + 1)
                 if leftUpNighbour in dictPointer.keys():
-                    print("leftUpNighbour exist")
+
                     dictPointer.get(coord)['backslash'] += dictPointer.get(leftUpNighbour)['backslash']   #update the current step
                     #dictPointer.get(upNighbour)['upDown'] = dictPointer.get(coord)['upDown']   #update last step
                     # use while loop to update all past steps
@@ -449,7 +449,7 @@ class GtpConnection():
                         leftUpNighbour = (coord[0]-1-counter,coord[1] - 1 - counter)
                         counter +=1
                 if rightDownNighbour in dictPointer.keys():
-                    print("rightDownNighbour exist")
+
                     dictPointer.get(coord)['backslash'] += dictPointer.get(rightDownNighbour)['backslash']
                     #dictPointer.get(downNighbour)['upDown'] = dictPointer.get(coord)['upDown']
                     counter = 1
@@ -465,7 +465,7 @@ class GtpConnection():
                     leftUpNighbour = (coord[0] - 1 - counter, coord[1] - 1 - counter)
                     counter += 1
             #print(key,value)
-        print(dictPointer, "########") #self.dictStoreWhiteMove, self.dictStoreBlackMove)
+
         # -------------------------------------------------
         # Update the corrosponding max value for that color
         # Tell the program, if one side is win!!!
